@@ -59,9 +59,146 @@ churn = ((score_churn + ruido_aleatorio) >= 3).astype(int)
 
 ### 🧪 Experimentos para hacer
 
-1. Cambia `N = 300` a `N = 1000`. ¿Cambia la precisión del modelo?
-2. Ajusta los pesos del `score_churn`. ¿Qué pasa si le das más peso a `pagos_atrasados`?
-3. Agrega una feature nueva: `dias_sin_login = np.random.randint(0, 90, N)`. ¿El modelo la usa?
+> **Cómo ejecutar cualquier experimento:**
+> 1. Abre `train_model.py` en VS Code
+> 2. Aplica el cambio indicado
+> 3. Desde la terminal en la carpeta del proyecto: `python train_model.py`
+> 4. Lee el output y reflexiona sobre lo que cambió
+
+---
+
+#### Experimento 1 — Más datos = ¿mejor modelo?
+
+**Qué cambiar** en `train_model.py`, línea 6:
+```python
+# ANTES
+N = 300
+
+# DESPUÉS
+N = 1000
+```
+
+**Cómo ejecutar:**
+```powershell
+# En tu terminal, dentro de churn-project/
+python train_model.py
+```
+
+**Qué observar en el output:**
+```
+Dataset generado: 1000 clientes | Tasa de churn: XX.X%
+
+=== Reporte de Clasificación (Test Set) ===
+              precision    recall  f1-score   support
+           0       X.XX      X.XX      X.XX       ???   ← ¿Subió?
+           1       X.XX      X.XX      X.XX       ???
+    accuracy                           X.XX       200   ← Ahora son 200 casos de test
+```
+
+**Qué esperar:** La accuracy debería subir (o estabilizarse cerca del 85-90%). Con más datos, el modelo tiene más ejemplos para aprender patrones. El `support` de la clase 1 también aumenta, lo que hace las métricas más confiables.
+
+**Reflexión:** ¿Por qué con 4 datos originales del proyecto base era imposible confiar en el modelo?
+
+---
+
+#### Experimento 2 — ¿Qué pasa si cambias los pesos del churn?
+
+**Qué cambiar** en `train_model.py`, líneas 19-24:
+```python
+# ANTES (pagos_atrasados tiene peso 1)
+score_churn = (
+    (uso_mensual < 5).astype(int) * 2     +
+    (tickets_soporte > 5).astype(int) * 2 +
+    (pagos_atrasados > 2).astype(int) * 1 +
+    (meses_contrato < 6).astype(int) * 1
+)
+
+# DESPUÉS (pagos_atrasados ahora tiene peso 3 — es el más importante)
+score_churn = (
+    (uso_mensual < 5).astype(int) * 1     +
+    (tickets_soporte > 5).astype(int) * 1 +
+    (pagos_atrasados > 2).astype(int) * 3 +
+    (meses_contrato < 6).astype(int) * 1
+)
+```
+
+**Cómo ejecutar:**
+```powershell
+python train_model.py
+```
+
+**Qué observar en el output — la sección de Feature Importance:**
+```
+=== Importancia de Features ===
+  pagos_atrasados      X.XXX   ← ¿Subió al primer lugar?
+  tickets_soporte      X.XXX
+  uso_mensual          X.XXX
+  ...
+```
+
+**Qué esperar:** El modelo aprende de los datos. Si `pagos_atrasados` ahora es el factor que más determina el `churn=1` en tus datos, el Random Forest lo detecta y le da mayor importancia automáticamente.
+
+**Reflexión clave:** Esto demuestra que el modelo **no sabe de negocios** — aprende de los datos que le das. Si los datos están sesgados, el modelo también lo estará. En el mundo real, los pesos vienen de análisis histórico real, no de reglas inventadas.
+
+---
+
+#### Experimento 3 — Agregar una nueva feature
+
+**Qué cambiar** en `train_model.py`. Hay **3 lugares** que tocar:
+
+**Paso 1** — Genera la nueva columna (después de línea 15, `pagos_atrasados = ...`):
+```python
+# AGREGAR esta línea:
+dias_sin_login = np.random.randint(0, 90, N)   # 0 a 90 días sin entrar
+```
+
+**Paso 2** — Inclúyela en el score de churn (modifica la fórmula):
+```python
+score_churn = (
+    (uso_mensual < 5).astype(int) * 2      +
+    (tickets_soporte > 5).astype(int) * 2  +
+    (pagos_atrasados > 2).astype(int) * 1  +
+    (meses_contrato < 6).astype(int) * 1   +
+    (dias_sin_login > 60).astype(int) * 2  # ← NUEVA: más de 60 días = señal fuerte
+)
+```
+
+**Paso 3** — Agrégala al DataFrame (modifica el `pd.DataFrame(...)`):
+```python
+df = pd.DataFrame({
+    'edad': edad,
+    'uso_mensual': uso_mensual,
+    'tickets_soporte': tickets_soporte,
+    'meses_contrato': meses_contrato,
+    'pagos_atrasados': pagos_atrasados,
+    'dias_sin_login': dias_sin_login,   # ← NUEVA columna
+    'churn': churn
+})
+```
+
+**Cómo ejecutar:**
+```powershell
+python train_model.py
+```
+
+**Qué observar:**
+```
+=== Importancia de Features ===
+  dias_sin_login       X.XXX   ← ¿Aparece? ¿Con qué posición?
+  tickets_soporte      X.XXX
+  uso_mensual          X.XXX
+  ...
+```
+
+**⚠️ Importante — también debes actualizar `app/app.py`:**  
+El modelo ahora espera 6 features, pero la API solo envía 5. Debes agregar `dias_sin_login` a `FEATURE_NAMES`:
+```python
+# En app/app.py, línea ~13
+FEATURE_NAMES = ['edad', 'uso_mensual', 'tickets_soporte',
+                 'meses_contrato', 'pagos_atrasados', 'dias_sin_login']
+```
+Y actualizar el `INSERT INTO history` para incluir la nueva columna.  
+**Esto simula exactamente lo que es un "schema migration" en producción.**
 
 ### ❓ Preguntas de comprensión
 
