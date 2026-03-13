@@ -55,7 +55,51 @@ score_churn = (
 churn = ((score_churn + ruido_aleatorio) >= 3).astype(int)
 ```
 
-> **Concepto clave**: Estamos *asignando* la etiqueta `churn=1` basados en reglas de negocio. En producción, esta etiqueta vendría de datos históricos reales (clientes que SÍ se fueron).
+#### 🔢 Cómo interpretar cada peso
+
+El `score_churn` es una **suma ponderada de señales de riesgo**. Cada condición devuelve `1` (verdadero) o `0` (falso), y ese resultado se multiplica por su peso:
+
+| Condición | Umbral | Peso | Lógica de negocio |
+|---|---|---|---|
+| `uso_mensual < 5` | Menos de 5 sesiones al mes | **× 2** | Un cliente que casi no usa el producto está desenganchado. Es la señal más fuerte de abandono inminente. |
+| `tickets_soporte > 5` | Más de 5 tickets abiertos | **× 2** | Muchas quejas = cliente frustrado. También peso alto porque frustración sostenida = cancelación. |
+| `pagos_atrasados > 2` | Más de 2 pagos tardíos | **× 1** | Señal financiera moderada. Puede ser olvido, pero también desinterés en mantener el servicio. |
+| `meses_contrato < 6` | Menos de 6 meses de antigüedad | **× 1** | Los clientes nuevos tienen menos compromiso y aún evalúan si el producto les sirve. |
+
+#### 🎯 El umbral de decisión: `>= 3`
+
+Un cliente se etiqueta `churn = 1` cuando su **score total es 3 o más** (más 0 o 1 de ruido aleatorio):
+
+```
+score posible máximo = 2 + 2 + 1 + 1 = 6
+umbral de churn      = 3
+```
+
+Esto significa que un cliente necesita **al menos una señal fuerte sola**, o **dos señales débiles combinadas** para ser considerado en riesgo.
+
+#### 👥 Simulación con dos clientes reales
+
+**Cliente A — Riesgo ALTO:**
+
+| Feature | Valor | ¿Cumple condición? | Contribución al score |
+|---|---|---|---|
+| `uso_mensual` | 2 sesiones | ✅ sí (< 5) | `1 × 2 = 2` |
+| `tickets_soporte` | 7 tickets | ✅ sí (> 5) | `1 × 2 = 2` |
+| `pagos_atrasados` | 1 pago | ❌ no (≤ 2) | `0 × 1 = 0` |
+| `meses_contrato` | 24 meses | ❌ no (≥ 6) | `0 × 1 = 0` |
+| **TOTAL** | | | **score = 4 → churn = 1** ✅ |
+
+**Cliente B — Riesgo BAJO:**
+
+| Feature | Valor | ¿Cumple condición? | Contribución al score |
+|---|---|---|---|
+| `uso_mensual` | 20 sesiones | ❌ no (≥ 5) | `0 × 2 = 0` |
+| `tickets_soporte` | 1 ticket | ❌ no (≤ 5) | `0 × 2 = 0` |
+| `pagos_atrasados` | 0 pagos | ❌ no (≤ 2) | `0 × 1 = 0` |
+| `meses_contrato` | 36 meses | ❌ no (≥ 6) | `0 × 1 = 0` |
+| **TOTAL** | | | **score = 0 → churn = 0** ✅ |
+
+> **Concepto clave**: Los pesos son una decisión de diseño. En producción, en vez de inventarlos, se usan técnicas como **Regresión Logística** o **análisis de correlación** con datos históricos reales para descubrir qué tanto contribuye cada feature al churn real.
 
 ### 🧪 Experimentos para hacer
 

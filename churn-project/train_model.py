@@ -8,7 +8,7 @@ import os
 
 # --- Semilla para reproducibilidad ---
 np.random.seed(42)
-N = 300  # Número de clientes simulados
+N = 1000  # Número de clientes simulados
 
 # --- Ingeniería de Características (Feature Engineering) ---
 # Simulamos un dataset más realista con 5 features relevantes para churn
