@@ -14,7 +14,7 @@ DB_PATH    = os.path.join(os.path.dirname(__file__), 'predictions.db')
 model = joblib.load(MODEL_PATH)
 
 # FEATURES esperadas en el mismo orden que fue entrenado el modelo
-FEATURE_NAMES = ['edad', 'uso_mensual', 'tickets_soporte', 'meses_contrato', 'pagos_atrasados']
+FEATURE_NAMES = ['edad', 'uso_mensual', 'tickets_soporte', 'meses_contrato', 'pagos_atrasados', 'dias_sin_login']
 
 
 def init_db():
@@ -30,6 +30,7 @@ def init_db():
             tickets_soporte  INTEGER,
             meses_contrato   INTEGER,
             pagos_atrasados  INTEGER,
+            dias_sin_login   INTEGER,
             prediction       INTEGER,
             probabilidad     REAL
         )
@@ -84,12 +85,12 @@ def predict():
     cursor = conn.cursor()
     cursor.execute('''
         INSERT INTO history
-            (timestamp, edad, uso_mensual, tickets_soporte, meses_contrato, pagos_atrasados, prediction, probabilidad)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            (timestamp, edad, uso_mensual, tickets_soporte, meses_contrato, pagos_atrasados, dias_sin_login, prediction, probabilidad)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     ''', (
         datetime.utcnow().isoformat(),
         data['edad'], data['uso_mensual'], data['tickets_soporte'],
-        data['meses_contrato'], data['pagos_atrasados'],
+        data['meses_contrato'], data['pagos_atrasados'], data['dias_sin_login'],
         prediction, probabilidad
     ))
     conn.commit()
@@ -110,7 +111,7 @@ def get_history():
     cursor = conn.cursor()
     cursor.execute('''
         SELECT id, timestamp, edad, uso_mensual, tickets_soporte,
-               meses_contrato, pagos_atrasados, prediction, probabilidad
+               meses_contrato, pagos_atrasados, dias_sin_login, prediction, probabilidad
         FROM history ORDER BY id DESC LIMIT 20
     ''')
     columns = [desc[0] for desc in cursor.description]

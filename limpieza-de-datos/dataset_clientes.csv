@@ -1,0 +1,31 @@
+id,nombre,edad,genero,ciudad,salario,fecha_registro,email,calificacion,categoria
+1,Ana García,29,F,Ciudad de México,45000,2023-01-15,ana.garcia@email.com,4.5,A
+2,Carlos López,35,M,Guadalajara,62000,2023-02-20,carlos.lopez@email.com,3.8,B
+3,María Rodríguez,,F,Monterrey,55000,2023-01-30,maria.rodriguez@email.com,4.1,A
+4,juan pérez,41,M,Ciudad de México,78000,2023-03-10,juan.perez@email.com,2.9,C
+5,Laura Martínez,27,Femenino,GUADALAJARA,48000,2023/02/14,laura.martinez@email.com,4.7,A
+6,Pedro Sánchez,52,M,Monterrey,,2023-04-05,pedro.sanchez@email.com,3.2,B
+7,Ana García,29,F,Ciudad de México,45000,2023-01-15,ana.garcia@email.com,4.5,A
+8,Sofía Torres,31,F,Puebla,41000,2023-05-22,sofia.torres@email.com,,B
+9,Miguel Hernández,999,M,Tijuana,39000,2023-06-18,miguel.hernandez@email.com,3.6,C
+10,Valentina Cruz,24,F,Mérida,36000,2023-07-09,valentina_cruz@email.com,4.2,A
+11,Roberto Jiménez,47,M,León,92000,2023-08-01,roberto.jimenez@email.com,1.8,D
+12,Fernanda Díaz,33,F,Puebla,51000,2023-09-12,fernanda.diaz@email.com,4.0,A
+13,,38,M,Guadalajara,67000,2023-10-05,,3.5,B
+14,Diego Morales,29,Masculino,ciudad de méxico,71000,2023-11-20,diego.morales@email.com,4.4,A
+15,Camila Vargas,22,F,Chihuahua,28000,2023-12-01,camila.vargas@email.com,4.9,A
+16,Andrés Ruiz,60,M,Monterrey,-5000,2024-01-15,andres.ruiz@email.com,3.1,C
+17,Bárbara Flores,44,F,Tijuana,58000,2024-02-28,barbara.flores@email.com,2.7,B
+18,Luis Castro,39,m,León,63000,2024-03-17,luis.castro@email.com,3.9,B
+19,Daniela Reyes,N/A,F,Mérida,44000,2024-04-22,daniela.reyes@email.com,4.3,A
+20,José Ortiz,55,M,Chihuahua,110000,2024-05-30,jose.ortiz@email.com,2.5,C
+21,Pedro Sánchez,52,M,Monterrey,,2023-04-05,pedro.sanchez@email.com,3.2,B
+22,Claudia Mendoza,37,F,Ciudad de México,53000,2024-06-15,claudia_mendoza,4.6,A
+23,Hector Vega,28,M,Guadalajara,38000,2024-07-08,hector.vega@email.com,3.4,C
+24,Patricia Ríos,46,F,Puebla,49000,2024-08-21,patricia.rios@email.com,,B
+25,Marco Alvarado,31,M,Monterrey,75000,2024-09-10,marco.alvarado@email.com,4.8,A
+26,Isabel Guzmán,,F,Ciudad de México,61000,2024-10-05,isabel.guzman@email.com,4.0,A
+27,Tomás Espinoza,43,M,Tijuana,57000,2024-11-19,tomas.espinoza@email.com,3.7,B
+28,Rosa Medina,26,F,León,33000,2024-12-02,rosa.medina@email.com,4.1,A
+29,Enrique Navarro,34,M,Chihuahua,69000,2024-12-15,enrique.navarro@email.com,2.2,D
+30,Alejandra Peña,50,F,Mérida,85000,2025-01-20,alejandra.pena@email.com,3.8,B

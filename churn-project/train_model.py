@@ -13,6 +13,7 @@ N = 1000  # Número de clientes simulados
 # --- Ingeniería de Características (Feature Engineering) ---
 # Simulamos un dataset más realista con 5 features relevantes para churn
 edad            = np.random.randint(22, 65, N)
+dias_sin_login = np.random.randint(0, 90, N)       # cantidad de dias sin igresar al app
 uso_mensual     = np.random.randint(0, 30, N)      # Sesiones por mes
 tickets_soporte = np.random.randint(0, 10, N)      # Tickets de soporte abiertos
 meses_contrato  = np.random.randint(1, 48, N)      # Antigüedad del cliente
@@ -24,7 +25,8 @@ score_churn = (
     (uso_mensual < 5).astype(int) * 2     +
     (tickets_soporte > 5).astype(int) * 2 +
     (pagos_atrasados > 2).astype(int) * 1 +
-    (meses_contrato < 6).astype(int) * 1
+    (meses_contrato < 6).astype(int) * 1 +
+    (dias_sin_login > 60).astype(int) * 2
 )
 # Churn = 1 si el score es >= 3 (con algo de ruido aleatorio)
 churn = ((score_churn + np.random.randint(0, 2, N)) >= 3).astype(int)
@@ -35,6 +37,7 @@ df = pd.DataFrame({
     'tickets_soporte': tickets_soporte,
     'meses_contrato': meses_contrato,
     'pagos_atrasados': pagos_atrasados,
+    'dias_sin_login': dias_sin_login,
     'churn': churn
 })
 
@@ -49,8 +52,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 model = RandomForestClassifier(
-    n_estimators=100,
-    max_depth=5,
+    n_estimators=10,
+    max_depth=None,
     random_state=42
 )
 model.fit(X_train, y_train)
