@@ -125,3 +125,5 @@ tree.plot_tree(tree_model, feature_names=['StudyHours', 'PrevExamScore'], class_
 plt.title('Decision Tree for Classifying Pass/Fail')
 plt.show()
 
+print("me quede")
+

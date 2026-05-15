@@ -125,3 +125,5 @@ plt.legend()
 
 # Muestra la ventana del grafico.
 plt.show()
+
+print('Me quede')
